@@ -8,11 +8,18 @@ Dataset: COVID-19 Image Dataset
 
 import argparse
 import os
-import kagglehub
 
 
 def download_dataset():
     """Download the COVID-19 dataset from Kaggle"""
+    try:
+        import kagglehub
+    except ImportError:
+        print("Error: kagglehub package is not installed.")
+        print("Please install it using: pip install kagglehub")
+        print("Or install all requirements: pip install -r requirements.txt")
+        return None
+    
     print("Downloading COVID-19 Image Dataset from Kaggle...")
     try:
         # Download latest version
