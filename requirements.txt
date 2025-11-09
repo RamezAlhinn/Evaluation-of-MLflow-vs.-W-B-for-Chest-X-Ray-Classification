@@ -1,0 +1,28 @@
+# Core Dependencies
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.24.0
+pillow>=9.5.0
+scikit-learn>=1.3.0
+
+# MLflow
+mlflow>=2.8.0
+mlflow[pytorch]>=2.8.0
+
+# Weights & Biases
+wandb>=0.15.0
+
+# Data Loading
+kagglehub>=0.2.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Utilities
+pandas>=2.0.0
+tqdm>=4.65.0
+
+# Model Summary (optional)
+torchsummary>=1.5.1
+
