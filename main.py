@@ -11,7 +11,7 @@ import os
 
 
 def download_dataset():
-    """Download the COVID-19 dataset from Kaggle"""
+    """Download the COVID-19 dataset from Kaggle and save it in the project directory"""
     try:
         import kagglehub
     except ImportError:
@@ -20,34 +20,125 @@ def download_dataset():
         print("Or install all requirements: pip install -r requirements.txt")
         return None
     
+    # Get the project directory (where this script is located)
+    project_dir = os.path.dirname(os.path.abspath(__file__))
+    target_dir = os.path.join(project_dir, "Covid19-dataset")
+    
+    # Check if dataset already exists in project directory
+    if os.path.exists(target_dir):
+        print(f"Dataset already exists in project directory: {target_dir}")
+        # Verify it has the train folder with classes
+        train_dir = os.path.join(target_dir, "train")
+        if os.path.exists(train_dir):
+            classes = [item for item in os.listdir(train_dir) 
+                      if os.path.isdir(os.path.join(train_dir, item))]
+            if any(c.lower() in ['covid', 'normal', 'viral'] for c in classes):
+                print("Dataset appears to be complete. Using existing dataset.")
+                return target_dir
+        else:
+            print("Dataset folder exists but appears incomplete. Re-downloading...")
+    
     print("Downloading COVID-19 Image Dataset from Kaggle...")
     try:
-        # Download latest version
-        path = kagglehub.dataset_download("pranavraikokte/covid19-image-dataset")
-        print(f"Dataset downloaded to: {path}")
+        # Download to kaggle cache first
+        cache_path = kagglehub.dataset_download("pranavraikokte/covid19-image-dataset")
+        print(f"Dataset downloaded to cache: {cache_path}")
         
-        # Check for the actual data directory
-        import os
-        # The dataset might be in a nested structure
-        possible_paths = [
-            os.path.join(path, "Covid19-dataset", "train"),
-            os.path.join(path, "train"),
-            path
-        ]
+        # Copy or move dataset to project directory
+        import shutil
+        import zipfile
+        import glob
         
-        for test_path in possible_paths:
-            if os.path.exists(test_path):
-                # Check if it has class folders
-                items = [item for item in os.listdir(test_path) 
-                        if os.path.isdir(os.path.join(test_path, item))]
-                if any(item.lower() in ['covid', 'normal', 'viral'] for item in items):
-                    print(f"Found dataset at: {test_path}")
-                    return test_path
+        # Check if the dataset is in a zip file
+        zip_files = glob.glob(os.path.join(cache_path, "*.zip"))
         
-        # Return the original path and let the data loader figure it out
-        return path
+        if zip_files:
+            # Extract zip file to project directory
+            print("Extracting dataset from zip file...")
+            zip_path = zip_files[0]
+            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                # Extract to a temporary directory first
+                temp_extract = os.path.join(project_dir, "temp_extract")
+                zip_ref.extractall(temp_extract)
+                
+                # Find the Covid19-dataset folder in extracted files
+                for root, dirs, files in os.walk(temp_extract):
+                    if 'Covid19-dataset' in dirs:
+                        source_dataset = os.path.join(root, 'Covid19-dataset')
+                        # Move to project directory
+                        if os.path.exists(target_dir):
+                            shutil.rmtree(target_dir)
+                        shutil.move(source_dataset, target_dir)
+                        # Clean up temp directory
+                        shutil.rmtree(temp_extract)
+                        print(f"Dataset extracted to: {target_dir}")
+                        break
+                else:
+                    # If Covid19-dataset not found, check for train/test folders directly
+                    for root, dirs, files in os.walk(temp_extract):
+                        if 'train' in dirs and 'test' in dirs:
+                            # Create Covid19-dataset structure
+                            os.makedirs(target_dir, exist_ok=True)
+                            shutil.move(os.path.join(root, 'train'), 
+                                      os.path.join(target_dir, 'train'))
+                            shutil.move(os.path.join(root, 'test'), 
+                                      os.path.join(target_dir, 'test'))
+                            # Clean up temp directory
+                            shutil.rmtree(temp_extract)
+                            print(f"Dataset extracted to: {target_dir}")
+                            break
+        else:
+            # Dataset is already extracted, copy it to project directory
+            print("Copying dataset to project directory...")
+            
+            # Look for Covid19-dataset folder in cache
+            covid_dataset_cache = os.path.join(cache_path, "Covid19-dataset")
+            if os.path.exists(covid_dataset_cache):
+                if os.path.exists(target_dir):
+                    shutil.rmtree(target_dir)
+                shutil.copytree(covid_dataset_cache, target_dir)
+                print(f"Dataset copied to: {target_dir}")
+            else:
+                # Check if cache_path itself contains train/test folders
+                if os.path.exists(os.path.join(cache_path, "train")) and \
+                   os.path.exists(os.path.join(cache_path, "test")):
+                    os.makedirs(target_dir, exist_ok=True)
+                    shutil.copytree(os.path.join(cache_path, "train"), 
+                                  os.path.join(target_dir, "train"))
+                    shutil.copytree(os.path.join(cache_path, "test"), 
+                                  os.path.join(target_dir, "test"))
+                    print(f"Dataset copied to: {target_dir}")
+                else:
+                    # Try to find the dataset structure
+                    for item in os.listdir(cache_path):
+                        item_path = os.path.join(cache_path, item)
+                        if os.path.isdir(item_path):
+                            # Check if this directory contains train/test
+                            if 'train' in os.listdir(item_path):
+                                if os.path.exists(target_dir):
+                                    shutil.rmtree(target_dir)
+                                shutil.copytree(item_path, target_dir)
+                                print(f"Dataset copied to: {target_dir}")
+                                break
+        
+        # Verify the dataset was copied correctly
+        if os.path.exists(target_dir):
+            train_dir = os.path.join(target_dir, "train")
+            if os.path.exists(train_dir):
+                classes = [item for item in os.listdir(train_dir) 
+                          if os.path.isdir(os.path.join(train_dir, item))]
+                if classes:
+                    print(f"Dataset successfully saved to: {target_dir}")
+                    print(f"Found classes: {classes}")
+                    return target_dir
+        
+        print(f"Warning: Dataset structure may be unexpected. Check: {target_dir}")
+        return target_dir
+        
     except Exception as e:
         print(f"Error downloading dataset: {e}")
+        import traceback
+        traceback.print_exc()
         print("Please ensure you have:")
         print("1. Kaggle API credentials set up (~/.kaggle/kaggle.json)")
         print("2. kagglehub package installed (pip install kagglehub)")
@@ -83,16 +174,27 @@ Examples:
     if args.download:
         dataset_path = download_dataset()
         if dataset_path:
-            print(f"\nDataset ready at: {dataset_path}")
+            print(f"\n{'='*60}")
+            print(f"Dataset ready at: {dataset_path}")
+            print(f"{'='*60}")
             print("\nNext steps:")
-            # Check if dataset is in project directory
-            project_dataset = os.path.join(os.path.dirname(__file__), "Covid19-dataset")
-            if os.path.exists(project_dataset):
-                dataset_path = project_dataset
-                print(f"\nNote: Found dataset in project directory: {dataset_path}")
-            print(f"\n1. Train with MLflow: python train_mlflow.py --dataset_path \"{dataset_path}\" --epochs 20")
-            print(f"2. Train with W&B: python train_wandb.py --dataset_path \"{dataset_path}\" --epochs 20")
-            print(f"3. Compare both: python compare_mlflow_wandb.py --dataset_path \"{dataset_path}\" --epochs 10")
+            # Use relative path for easier usage
+            if os.path.isabs(dataset_path):
+                rel_path = os.path.relpath(dataset_path, os.path.dirname(__file__))
+                if not rel_path.startswith('..'):
+                    dataset_path_display = rel_path
+                else:
+                    dataset_path_display = dataset_path
+            else:
+                dataset_path_display = dataset_path
+            
+            print(f"\n1. Train with MLflow:")
+            print(f"   python train_mlflow.py --dataset_path \"{dataset_path_display}\" --epochs 20")
+            print(f"\n2. Train with W&B:")
+            print(f"   python train_wandb.py --dataset_path \"{dataset_path_display}\" --epochs 20")
+            print(f"\n3. Compare both:")
+            print(f"   python compare_mlflow_wandb.py --dataset_path \"{dataset_path_display}\" --epochs 10")
+            print(f"\nNote: You can also use just 'Covid19-dataset' as the path if running from the project directory.")
     else:
         print("COVID-19 Chest X-Ray Classification Project")
         print("=" * 60)
