@@ -10,19 +10,19 @@ INPUT_CHANNELS = 3
 NUM_CLASSES = 3
 
 class CustomCXRClassifier(nn.Module):
-"""
-A custom Convolutional Neural Network (CNN) architecture designed for 
-3-way Chest X-Ray classification (COVID-19, Viral Pneumonia, Normal).
+    """
+    A custom Convolutional Neural Network (CNN) architecture designed for 
+    3-way Chest X-Ray classification (COVID-19, Viral Pneumonia, Normal).
 
-This architecture is based on the implementation from:
-https://github.com/Vinay10100/Chest-X-Ray-Classification
+    This architecture is based on the implementation from:
+    https://github.com/Vinay10100/Chest-X-Ray-Classification
 
-The architecture has been adapted to work with PyTorch and integrated with
-MLflow and W&B for experiment tracking and comparison.
+    The architecture has been adapted to work with PyTorch and integrated with
+    MLflow and W&B for experiment tracking and comparison.
 
-The architecture parameters (Conv Depth, Filter Size, Dropout) are key 
-hyperparameters to be tracked and compared in the MLflow vs. W&B evaluation.
-"""
+    The architecture parameters (Conv Depth, Filter Size, Dropout) are key 
+    hyperparameters to be tracked and compared in the MLflow vs. W&B evaluation.
+    """
     def __init__(self, in_channels=INPUT_CHANNELS, num_classes=NUM_CLASSES):
         super(CustomCXRClassifier, self).__init__()
         
