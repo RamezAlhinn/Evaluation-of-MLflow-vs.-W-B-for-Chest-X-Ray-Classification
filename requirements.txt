@@ -12,11 +12,15 @@ mlflow>=2.8.0
 wandb>=0.15.0
 
 # Data Loading
+kaggle>=1.5.12
 kagglehub>=0.2.0
 
 # Visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0
+
+# Configuration
+pyyaml>=6.0
 
 # Utilities
 pandas>=2.0.0

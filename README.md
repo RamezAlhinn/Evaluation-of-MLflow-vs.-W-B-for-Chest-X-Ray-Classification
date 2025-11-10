@@ -16,17 +16,66 @@ This project evaluates and compares **MLflow** and **Weights & Biases (W&B)** fo
 
 ```
 .
-├── CNN_Model.py              # Custom CNN architecture for Chest X-Ray classification
-├── data_loader.py            # Data loading and preprocessing utilities
-├── MlFlow.py                 # MLflow integration for PyTorch
-├── WD.py                     # W&B integration for PyTorch
-├── train_mlflow.py           # Training script with MLflow tracking
-├── train_wandb.py            # Training script with W&B tracking
-├── compare_mlflow_wandb.py   # Comparison script for both tools
-├── main.py                   # Main entry point and dataset download
-├── requirements.txt          # Python dependencies
-└── README.md                 # This file
+├── src/                          # Core source code
+│   ├── models/                   # Model definitions
+│   │   ├── __init__.py
+│   │   └── cnn_model.py          # Custom CNN architecture
+│   ├── data/                     # Data handling
+│   │   ├── __init__.py
+│   │   └── data_loader.py        # Data loading utilities
+│   ├── tracking/                 # Experiment tracking
+│   │   ├── __init__.py
+│   │   ├── mlflow_tracker.py     # MLflow integration
+│   │   └── wandb_tracker.py      # W&B integration
+│   └── utils/                    # Utility functions
+│       └── __init__.py
+│
+├── scripts/                      # Training and execution scripts
+│   ├── train_mlflow.py           # Train with MLflow
+│   ├── train_wandb.py            # Train with W&B
+│   ├── compare_mlflow_wandb.py   # Compare both tools
+│   ├── run_hyperparameter_tuning.py      # MLflow hyperparameter tuning
+│   ├── run_wandb_hyperparameter_tuning.py # W&B hyperparameter tuning
+│   └── start_mlflow_ui.py        # Start MLflow UI
+│
+├── examples/                     # Example scripts
+│   ├── example_mlflow_usage.py
+│   └── example_wandb_usage.py
+│
+├── configs/                      # Configuration files
+│   ├── mlflow/                   # MLflow configurations
+│   │   ├── experiments.yaml
+│   │   ├── hyperparameters.yaml
+│   │   └── quick_test.yaml
+│   └── wandb/                    # W&B configurations
+│       ├── experiments.yaml
+│       ├── hyperparameters.yaml
+│       └── quick_test.yaml
+│
+├── docs/                         # Documentation
+│   ├── mlflow/                   # MLflow documentation
+│   ├── wandb/                    # W&B documentation
+│   └── examples/                 # Example documentation
+│
+├── tests/                        # Unit tests
+│   └── __init__.py
+│
+├── notebooks/                    # Jupyter notebooks (optional)
+│
+├── Covid19-dataset/              # Dataset directory
+│   ├── train/
+│   └── test/
+│
+├── mlruns/                       # MLflow runs (gitignored)
+├── wandb/                        # W&B runs (gitignored)
+│
+├── main.py                       # Main entry point
+├── requirements.txt              # Python dependencies
+├── PROJECT_STRUCTURE.md          # Detailed structure documentation
+└── README.md                     # This file
 ```
+
+**See [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for detailed structure documentation.**
 
 ## Model Architecture
 
@@ -79,7 +128,12 @@ This will download the COVID-19 Image Dataset from Kaggle to your local director
 ### 2. Train with MLflow
 
 ```bash
-python train_mlflow.py --dataset_path <path_to_dataset> --epochs 20 --batch_size 32
+python scripts/train_mlflow.py --dataset_path "Covid19-dataset" --epochs 20 --batch_size 32
+```
+
+**Note**: If you install the package (`pip install -e .`), you can also use:
+```bash
+train-mlflow --dataset_path "Covid19-dataset" --epochs 20
 ```
 
 **Options:**
@@ -95,14 +149,50 @@ python train_mlflow.py --dataset_path <path_to_dataset> --epochs 20 --batch_size
 
 **View MLflow UI:**
 ```bash
+# On Windows (recommended)
+python -m mlflow ui
+
+# On Linux/Mac
 mlflow ui
 ```
 Then open http://localhost:5000 in your browser.
 
-### 3. Train with W&B
+**Note**: If `mlflow` command is not found, use `python -m mlflow ui` instead.
+
+**📖 For detailed MLflow usage instructions, see [docs/mlflow/MLFLOW_GUIDE.md](docs/mlflow/MLFLOW_GUIDE.md)**
+
+### 2.1. Hyperparameter Tuning with Parameter Matrix
+
+Run multiple experiments with different configurations easily:
 
 ```bash
-python train_wandb.py --dataset_path <path_to_dataset> --epochs 20 --batch_size 32
+# Run with default configuration (parameter grid)
+python scripts/run_hyperparameter_tuning.py
+
+# Run specific experiments from config file
+python scripts/run_hyperparameter_tuning.py --config configs/mlflow/experiments.yaml
+
+# Quick test with fewer experiments
+python scripts/run_hyperparameter_tuning.py --quick
+```
+
+**Modify parameters easily:**
+1. Edit `configs/mlflow/experiments.yaml` to add/remove experiments
+2. Edit `configs/mlflow/hyperparameters.yaml` for grid search
+3. Run the script to execute all experiments
+
+**📖 See [docs/mlflow/HYPERPARAMETER_TUNING_GUIDE.md](docs/mlflow/HYPERPARAMETER_TUNING_GUIDE.md) for detailed instructions**
+
+### 3. Train with W&B
+
+**First, login to W&B:**
+```bash
+wandb login
+```
+
+**Then train:**
+```bash
+python scripts/train_wandb.py --dataset_path "Covid19-dataset" --epochs 20 --batch_size 32
 ```
 
 **Options:**
@@ -117,13 +207,37 @@ python train_wandb.py --dataset_path <path_to_dataset> --epochs 20 --batch_size 
 - `--entity`: W&B entity/team name (optional)
 - `--test`: Evaluate on test set after training
 
-**View W&B Dashboard:**
-Results are automatically uploaded to the W&B cloud dashboard. A link will be printed in the terminal.
+**View Results:**
+Results are automatically uploaded to your W&B dashboard at https://wandb.ai
+
+**📖 For detailed W&B usage instructions, see [docs/wandb/WANDB_GUIDE.md](docs/wandb/WANDB_GUIDE.md)**
+
+### 3.1. Hyperparameter Tuning with W&B Parameter Matrix
+
+Run multiple experiments with different configurations easily:
+
+```bash
+# Run with default configuration (parameter grid)
+python scripts/run_wandb_hyperparameter_tuning.py
+
+# Run specific experiments from config file
+python scripts/run_wandb_hyperparameter_tuning.py --config configs/wandb/experiments.yaml
+
+# Quick test with fewer experiments
+python scripts/run_wandb_hyperparameter_tuning.py --quick
+```
+
+**Modify parameters easily:**
+1. Edit `configs/wandb/experiments.yaml` to add/remove experiments
+2. Edit `configs/wandb/hyperparameters.yaml` for grid search
+3. Run the script to execute all experiments
+
+**📖 See [docs/wandb/WANDB_HYPERPARAMETER_TUNING_GUIDE.md](docs/wandb/WANDB_HYPERPARAMETER_TUNING_GUIDE.md) for detailed instructions**
 
 ### 4. Compare MLflow vs W&B
 
 ```bash
-python compare_mlflow_wandb.py --dataset_path <path_to_dataset> --epochs 10
+python scripts/compare_mlflow_wandb.py --dataset_path "Covid19-dataset" --epochs 10
 ```
 
 This script runs the same experiment with both tracking tools and provides a comparison of:

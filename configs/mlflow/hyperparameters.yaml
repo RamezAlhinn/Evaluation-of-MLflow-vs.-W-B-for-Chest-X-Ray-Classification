@@ -1,0 +1,72 @@
+# Hyperparameter Configuration Matrix for MLflow Experiments
+# Modify this file to add/remove parameter combinations
+# Each experiment will be run with a combination of parameters
+
+# Base configuration (applies to all experiments)
+base_config:
+  dataset_path: "Covid19-dataset"
+  image_size: 128
+  device: "auto"  # "auto", "cuda", or "cpu"
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  random_seed: 42
+  optimizer: "Adam"
+  loss_function: "CrossEntropyLoss"
+  lr_step_size: 7
+  lr_gamma: 0.1
+  test_after_training: true  # Evaluate on test set after training
+
+# Parameter grid for hyperparameter tuning
+# Each key represents a parameter, and values is a list of values to try
+parameter_grid:
+  learning_rate: [0.001, 0.0001, 0.01]
+  batch_size: [32, 64, 16]
+  num_epochs: [20, 30, 50]
+  lr_gamma: [0.1, 0.5]
+  lr_step_size: [5, 7, 10]
+
+# Alternative: Define specific experiments (comment out parameter_grid to use this)
+# experiments:
+#   - name: "baseline"
+#     learning_rate: 0.001
+#     batch_size: 32
+#     num_epochs: 20
+#     lr_gamma: 0.1
+#     lr_step_size: 7
+#   
+#   - name: "high_lr"
+#     learning_rate: 0.01
+#     batch_size: 32
+#     num_epochs: 20
+#     lr_gamma: 0.1
+#     lr_step_size: 7
+#   
+#   - name: "large_batch"
+#     learning_rate: 0.001
+#     batch_size: 64
+#     num_epochs: 20
+#     lr_gamma: 0.1
+#     lr_step_size: 7
+
+# MLflow settings
+mlflow_config:
+  experiment_name: "Hyperparameter-Tuning"
+  use_run_names: true  # Use descriptive run names based on parameters
+  run_name_template: "lr_{learning_rate}_bs_{batch_size}_ep_{num_epochs}"
+
+# Execution settings
+execution:
+  run_all_combinations: false  # If true, runs all combinations (can be many!)
+  max_experiments: 10  # Maximum number of experiments to run (if run_all_combinations is false)
+  shuffle: true  # Shuffle experiments before running
+  continue_on_error: true  # Continue to next experiment if one fails
+
+# Quick test configuration (fewer experiments)
+quick_test:
+  learning_rate: [0.001]
+  batch_size: [32]
+  num_epochs: [10]
+  lr_gamma: [0.1]
+  lr_step_size: [7]
+

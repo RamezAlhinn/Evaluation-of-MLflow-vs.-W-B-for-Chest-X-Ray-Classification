@@ -1,0 +1,86 @@
+# Specific Experiment Configurations
+# Use this file to define specific experiments with exact parameters
+# More control than parameter grid - define exactly what to run
+
+base_config:
+  dataset_path: "Covid19-dataset"
+  image_size: 128
+  device: "auto"
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  random_seed: 42
+  optimizer: "Adam"
+  loss_function: "CrossEntropyLoss"
+  test_after_training: true
+
+mlflow_config:
+  experiment_name: "Specific-Experiments"
+  use_run_names: true
+
+# Define specific experiments to run
+experiments:
+  # Baseline configuration
+  - name: "baseline"
+    learning_rate: 0.001
+    batch_size: 32
+    num_epochs: 20
+    lr_gamma: 0.1
+    lr_step_size: 7
+  
+  # Higher learning rate
+  - name: "high_learning_rate"
+    learning_rate: 0.01
+    batch_size: 32
+    num_epochs: 20
+    lr_gamma: 0.1
+    lr_step_size: 7
+  
+  # Lower learning rate
+  - name: "low_learning_rate"
+    learning_rate: 0.0001
+    batch_size: 32
+    num_epochs: 20
+    lr_gamma: 0.1
+    lr_step_size: 7
+  
+  # Larger batch size
+  - name: "large_batch"
+    learning_rate: 0.001
+    batch_size: 64
+    num_epochs: 20
+    lr_gamma: 0.1
+    lr_step_size: 7
+  
+  # Smaller batch size
+  - name: "small_batch"
+    learning_rate: 0.001
+    batch_size: 16
+    num_epochs: 20
+    lr_gamma: 0.1
+    lr_step_size: 7
+  
+  # More epochs
+  - name: "more_epochs"
+    learning_rate: 0.001
+    batch_size: 32
+    num_epochs: 50
+    lr_gamma: 0.1
+    lr_step_size: 7
+  
+  # Different learning rate schedule
+  - name: "faster_lr_schedule"
+    learning_rate: 0.001
+    batch_size: 32
+    num_epochs: 20
+    lr_gamma: 0.5
+    lr_step_size: 5
+  
+  # Combined: high LR + large batch
+  - name: "high_lr_large_batch"
+    learning_rate: 0.01
+    batch_size: 64
+    num_epochs: 30
+    lr_gamma: 0.1
+    lr_step_size: 7
+

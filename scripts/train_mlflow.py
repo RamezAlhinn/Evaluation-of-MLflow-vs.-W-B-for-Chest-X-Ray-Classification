@@ -4,12 +4,19 @@ Trains the CNN model for Chest X-Ray Classification using MLflow for experiment 
 """
 
 import argparse
+import os
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
 import torch
 import torch.nn as nn
-from CNN_Model import CustomCXRClassifier
-from data_loader import get_data_loaders
-from MlFlow import train_with_mlflow, evaluate_with_mlflow
-import os
+from src.models.cnn_model import CustomCXRClassifier
+from src.data.data_loader import get_data_loaders
+from src.tracking.mlflow_tracker import train_with_mlflow, evaluate_with_mlflow
 
 
 def main():
@@ -111,9 +118,8 @@ def main():
         print(f"  F1 Score (Macro): {test_metrics['test_f1_macro']:.4f}")
     
     print("\nTraining completed!")
-    print("View MLflow UI: mlflow ui")
+    print("View MLflow UI: python -m mlflow ui")
 
 
 if __name__ == '__main__':
     main()
-

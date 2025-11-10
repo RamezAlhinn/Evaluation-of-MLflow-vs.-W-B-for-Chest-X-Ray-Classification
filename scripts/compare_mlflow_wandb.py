@@ -4,15 +4,22 @@ Runs the same experiment with both tracking tools and compares results
 """
 
 import argparse
+import os
+import sys
+import time
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
 import torch
 import torch.nn as nn
-from CNN_Model import CustomCXRClassifier
-from data_loader import get_data_loaders
-from MlFlow import train_with_mlflow, evaluate_with_mlflow
-from WD import train_with_wandb, evaluate_with_wandb
-import os
-import time
 import wandb
+from src.models.cnn_model import CustomCXRClassifier
+from src.data.data_loader import get_data_loaders
+from src.tracking.mlflow_tracker import train_with_mlflow, evaluate_with_mlflow
+from src.tracking.wandb_tracker import train_with_wandb, evaluate_with_wandb
 
 
 def run_mlflow_experiment(dataset_path, config, epochs, device, class_names, 
