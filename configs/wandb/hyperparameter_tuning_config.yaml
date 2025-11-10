@@ -1,0 +1,65 @@
+# Configuration for Weights & Biases Hyperparameter Tuning
+# Uses W&B Sweeps for hyperparameter optimization
+
+# Sweep configuration
+sweep:
+  method: bayes  # Options: grid, random, bayes
+  metric:
+    name: val_accuracy
+    goal: maximize
+
+  early_terminate:
+    type: hyperband
+    min_iter: 3
+    eta: 3
+
+# Hyperparameter search space
+parameters:
+  learning_rate:
+    distribution: log_uniform_values
+    min: 0.0001
+    max: 0.01
+
+  batch_size:
+    values: [16, 32, 64]
+
+  optimizer:
+    values: [Adam, SGD, AdamW]
+
+  lr_scheduler:
+    values: [StepLR, ReduceLROnPlateau, CosineAnnealingLR]
+
+  dropout_rate:
+    distribution: uniform
+    min: 0.2
+    max: 0.5
+
+# Fixed parameters (not tuned)
+fixed:
+  model:
+    architecture: CustomCNN
+    num_classes: 3
+    in_channels: 3
+
+  training:
+    epochs: 15  # Reduced for faster tuning
+    seed: 42
+
+  data:
+    image_size: 128
+    train_ratio: 0.7
+    val_ratio: 0.15
+    test_ratio: 0.15
+    num_workers: 2
+
+# W&B project configuration
+wandb:
+  project: covid-xray-hp-tuning
+  entity: null
+  mode: online
+
+# Sweep configuration
+sweep_config:
+  name: covid-xray-sweep
+  description: "Hyperparameter tuning for COVID-19 X-ray classification"
+  max_runs: 50  # Maximum number of runs in sweep

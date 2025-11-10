@@ -1,0 +1,108 @@
+# Advanced configuration for Weights & Biases tracking
+# Includes additional features and optimizations
+
+# Model configuration (unchanged from default)
+model:
+  architecture: CustomCNN
+  num_classes: 3
+  in_channels: 3
+  dropout_rates: [0.25, 0.3, 0.4, 0.25]
+
+# Advanced training configuration
+training:
+  epochs: 30
+  batch_size: 64
+  learning_rate: 0.0005
+  optimizer: AdamW
+  weight_decay: 0.01
+  loss_function: CrossEntropyLoss
+  label_smoothing: 0.1
+
+  # Learning rate scheduler with warm-up
+  lr_scheduler: CosineAnnealingLR
+  lr_warmup_epochs: 5
+  lr_min: 0.00001
+
+  # Mixed precision training
+  use_amp: true
+
+  # Gradient clipping
+  grad_clip_norm: 1.0
+
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 7
+    min_delta: 0.001
+
+  # Random seed
+  seed: 42
+
+# Data configuration with advanced augmentation
+data:
+  image_size: 128
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  num_workers: 4
+  pin_memory: true
+
+  # Advanced data augmentation
+  augmentation:
+    random_horizontal_flip: true
+    random_rotation: 15
+    random_affine:
+      degrees: 10
+      translate: [0.1, 0.1]
+    color_jitter:
+      brightness: 0.2
+      contrast: 0.2
+      saturation: 0.2
+    random_erasing:
+      enabled: true
+      p: 0.5
+      scale: [0.02, 0.33]
+
+  # Normalization
+  normalization:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# W&B advanced configuration
+wandb:
+  project: covid-xray-advanced
+  entity: null
+  mode: online
+  save_code: true
+  log_model: true
+
+  # Advanced logging features
+  log_freq: 5
+  watch_model: true  # Log gradients and model topology
+  watch_freq: 100
+
+  # Alert configuration
+  alerts:
+    enabled: true
+    email_on_failure: true
+
+  notes: "Advanced training with augmentation and regularization"
+  tags:
+    - covid19
+    - chest-xray
+    - classification
+    - advanced
+    - augmented
+
+# Device configuration
+device: cuda
+
+# Logging configuration
+logging:
+  log_interval: 5
+  save_best_model: true
+  save_checkpoint_every: 5  # Save checkpoint every N epochs
+  checkpoint_dir: checkpoints/wandb_advanced
+  log_confusion_matrix: true
+  log_sample_predictions: true
+  num_sample_images: 16  # Number of sample predictions to log
