@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+  # Development environment
+  covid-xray-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: covid-xray-classification:dev
+    container_name: covid-xray-dev
+    volumes:
+      - .:/workspace
+      - ./data:/workspace/data
+      - ./mlruns:/workspace/mlruns
+      - ./wandb:/workspace/wandb
+      - ./logs:/workspace/logs
+      - ./checkpoints:/workspace/checkpoints
+    environment:
+      - PYTHONPATH=/workspace
+      - CUDA_VISIBLE_DEVICES=0
+      - WANDB_API_KEY=${WANDB_API_KEY}
+    ports:
+      - "5000:5000"  # MLflow UI
+      - "8888:8888"  # Jupyter (if needed)
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # MLflow tracking server
+  mlflow-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: covid-xray-classification:mlflow
+    container_name: mlflow-server
+    volumes:
+      - ./mlruns:/app/mlruns
+    ports:
+      - "5000:5000"
+    command: mlflow ui --host 0.0.0.0 --port 5000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Training job (MLflow)
+  train-mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: covid-xray-classification:prod
+    container_name: train-mlflow
+    volumes:
+      - ./data:/app/data
+      - ./mlruns:/app/mlruns
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0
+    command: python -m scripts.train_mlflow --config configs/mlflow/default_config.yaml
+    depends_on:
+      - mlflow-server
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Training job (W&B)
+  train-wandb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: covid-xray-classification:prod
+    container_name: train-wandb
+    volumes:
+      - ./data:/app/data
+      - ./wandb:/app/wandb
+      - ./checkpoints:/app/checkpoints
+      - ./logs:/app/logs
+    environment:
+      - PYTHONPATH=/app
+      - CUDA_VISIBLE_DEVICES=0
+      - WANDB_API_KEY=${WANDB_API_KEY}
+    command: python -m scripts.train_wandb --config configs/wandb/default_config.yaml
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # Testing environment
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: testing
+    image: covid-xray-classification:test
+    container_name: covid-xray-test
+    volumes:
+      - .:/workspace
+      - ./test-results:/workspace/test-results
+    environment:
+      - PYTHONPATH=/workspace
+    command: pytest tests/ -v --cov=src --cov-report=html --cov-report=term
+
+networks:
+  default:
+    name: covid-xray-network

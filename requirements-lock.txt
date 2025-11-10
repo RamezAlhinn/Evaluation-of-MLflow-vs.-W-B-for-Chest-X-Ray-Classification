@@ -1,0 +1,78 @@
+# Locked dependencies for reproducibility
+# Generated on 2024-01-15
+# Python 3.9+
+
+# Core ML frameworks
+torch==2.1.2
+torchvision==0.16.2
+torchsummary==1.5.1
+
+# Scientific computing
+numpy==1.26.3
+pandas==2.1.4
+scikit-learn==1.4.0
+
+# Visualization
+matplotlib==3.8.2
+seaborn==0.13.1
+
+# Image processing
+Pillow==10.2.0
+
+# Configuration
+PyYAML==6.0.1
+
+# Experiment tracking
+mlflow==2.9.2
+wandb==0.16.2
+
+# Data loading
+kaggle==1.5.16
+kagglehub==0.1.4
+
+# Dependencies of dependencies (pinned for reproducibility)
+# PyTorch dependencies
+filelock==3.13.1
+typing-extensions==4.9.0
+sympy==1.12
+networkx==3.2.1
+jinja2==3.1.3
+fsspec==2023.12.2
+
+# MLflow dependencies
+alembic==1.13.1
+click==8.1.7
+cloudpickle==3.0.0
+databricks-cli==0.18.0
+entrypoints==0.4
+Flask==3.0.0
+gitpython==3.1.40
+gunicorn==21.2.0
+importlib-metadata==7.0.1
+markdown==3.5.2
+packaging==23.2
+protobuf==4.25.2
+pyarrow==14.0.2
+pytz==2023.3.post1
+querystring-parser==1.2.4
+requests==2.31.0
+scipy==1.11.4
+sqlalchemy==2.0.25
+sqlparse==0.4.4
+
+# W&B dependencies
+docker-pycreds==0.4.0
+pathtools==0.1.2
+psutil==5.9.7
+sentry-sdk==1.39.2
+setproctitle==1.3.3
+setuptools==69.0.3
+
+# Common dependencies
+certifi==2023.11.17
+charset-normalizer==3.3.2
+idna==3.6
+urllib3==2.1.0
+python-dateutil==2.8.2
+six==1.16.0
+tqdm==4.66.1
