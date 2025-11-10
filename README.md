@@ -79,12 +79,24 @@ This project evaluates and compares **MLflow** and **Weights & Biases (W&B)** fo
 
 ## Model Architecture
 
-The project uses a custom CNN architecture (`CustomCXRClassifier`) designed for Chest X-Ray classification:
+The project uses a custom CNN architecture (`CustomCXRClassifier`) designed for Chest X-Ray classification. The model architecture is based on the implementation from [Vinay10100/Chest-X-Ray-Classification](https://github.com/Vinay10100/Chest-X-Ray-Classification).
+
+### Architecture Details:
 
 - **Input**: RGB images (128x128 pixels)
-- **Architecture**: 4 convolutional blocks with increasing filters (16, 64, 128, 128)
+- **Architecture**: 
+  - Convolutional layer 1: 16 filters, 3x3 kernel, ReLU activation, followed by MaxPooling2D (2x2 pool size)
+  - Convolutional layer 2: 64 filters, 3x3 kernel, ReLU activation, padding='same', followed by MaxPooling2D (2x2 pool size), Dropout (0.25)
+  - Convolutional layer 3: 128 filters, 3x3 kernel, ReLU activation, padding='same', followed by MaxPooling2D (2x2 pool size), Dropout (0.3)
+  - Convolutional layer 4: 128 filters, 3x3 kernel, ReLU activation, padding='same', followed by MaxPooling2D (2x2 pool size), Dropout (0.4)
+  - Flatten layer
+  - Dense layer 1: 128 neurons, ReLU activation, Dropout (0.25)
+  - Dense layer 2: 64 neurons, ReLU activation
+  - Output layer: 3 neurons (one for each class), softmax activation
 - **Output**: 3 classes (COVID-19, Viral Pneumonia, Normal)
 - **Features**: Dropout regularization, MaxPooling, Fully Connected layers
+
+**Note**: This architecture has been adapted from the original implementation to work with PyTorch and integrated with MLflow and W&B for experiment tracking.
 
 ## Installation
 
@@ -373,6 +385,7 @@ This project is for educational and research purposes.
 
 If you use this project, please cite:
 - COVID-19 Image Dataset: [Kaggle Dataset](https://www.kaggle.com/datasets/pranavraikokte/covid19-image-dataset)
+- Model Architecture: [Vinay10100/Chest-X-Ray-Classification](https://github.com/Vinay10100/Chest-X-Ray-Classification)
 - MLflow: [MLflow Documentation](https://mlflow.org/)
 - Weights & Biases: [W&B Documentation](https://wandb.ai/)
 
@@ -382,6 +395,7 @@ Evaluation of MLflow vs. W&B for Chest X-Ray Classification
 
 ## Acknowledgments
 
+- [Vinay10100](https://github.com/Vinay10100) for the original CNN architecture implementation in [Chest-X-Ray-Classification](https://github.com/Vinay10100/Chest-X-Ray-Classification)
 - Kaggle for hosting the COVID-19 Image Dataset
 - MLflow team for the excellent experiment tracking tool
 - Weights & Biases team for the comprehensive MLOps platform

@@ -93,6 +93,8 @@ This document describes the improved project structure for better organization a
 ### 1. Source Code (`src/`)
 - **models/**: Model architecture definitions
   - `cnn_model.py`: Custom CNN for Chest X-Ray classification
+    - Architecture based on [Vinay10100/Chest-X-Ray-Classification](https://github.com/Vinay10100/Chest-X-Ray-Classification)
+    - Adapted for PyTorch and integrated with MLflow/W&B tracking
 - **data/**: Data loading and preprocessing
   - `data_loader.py`: Dataset loading, splitting, and augmentation
 - **tracking/**: Experiment tracking integrations
