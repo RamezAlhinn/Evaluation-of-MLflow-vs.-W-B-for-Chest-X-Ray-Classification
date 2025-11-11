@@ -2,6 +2,55 @@
 
 This project evaluates and compares **MLflow** and **Weights & Biases (W&B)** for experiment tracking and model management in a deep learning classification task.
 
+---
+
+## 🚀 Quick Start
+
+```bash
+# Install dependencies
+make install
+
+# Download dataset
+make download
+
+# Run quick W&B experiment (recommended for first-time users)
+make wandb-quick
+
+# Or try MLflow
+make mlflow-quick
+
+# Compare both tracking tools
+make compare
+```
+
+📚 **New here?** Check out:
+- [Getting Started Guide](GETTING_STARTED.md) - Command reference
+- [Before & After Guide](BEFORE_AFTER.md) - See the improvements
+- [Documentation Index](docs/README.md) - Complete documentation guide
+
+---
+
+## 📑 Table of Contents
+
+- [Quick Start](#-quick-start)
+- [Dataset](#dataset)
+- [Project Structure](#project-structure)
+- [Documentation](#documentation)
+- [Model Architecture](#model-architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Download Dataset](#1-download-dataset)
+  - [Train with MLflow](#2-train-with-mlflow)
+  - [Train with W&B](#3-train-with-wb)
+  - [Hyperparameter Tuning](#4-hyperparameter-tuning)
+  - [Compare Tools](#5-compare-mlflow-and-wb)
+- [Comparison: MLflow vs W&B](#comparison-mlflow-vs-wb)
+- [Requirements](#requirements)
+- [Troubleshooting](#troubleshooting)
+- [License & Citation](#license)
+
+---
+
 ## Dataset
 
 **COVID-19 Image Dataset**
